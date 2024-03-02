@@ -13,12 +13,11 @@ require("./config")(app);
 const allRoutes = require("./routes");
 app.use("/api", allRoutes);
 
+const quizInputRouter = require("./routes/quizinputs.routes");
+app.use("/api", quizInputRouter)
 
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
-
-const quizInputsRouter = require("./routes/quizinputs.routes");
-app.use("/api", quizInputsRouter);
 
 require("./error-handling")(app);
 
