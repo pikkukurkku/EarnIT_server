@@ -6,11 +6,8 @@ const quizInputSchema = new Schema({
   careerPathOptions: { type: [String], required: true },
   countries: { type: [String], required: true },
   cities: { type: [String], required: true },
-  jobTitle: {type: String, required: true },
-  employmentStatus: {type: String, required: true },
-  years: {type: Number, required: true },
-  salary: {type:String, required: true }, 
-  responsibilities: {type:[String], required: true }
+  quiz2: [{ type: Schema.Types.ObjectId, ref: "Quiz2" }],
+  quiz3: [{ type: Schema.Types.ObjectId, ref: "Quiz3" }],
 });
 
 
