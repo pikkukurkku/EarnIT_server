@@ -2,6 +2,8 @@ const express = require("express");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
+const QuizInput = require("../models/QuizInput.model");
+
 
 const { isAuthenticated } = require('./../middleware/jwt.middleware.js');
 
@@ -10,8 +12,10 @@ const saltRounds = 10;
 
 
 // POST /auth/signup  - Creates a new user in the database
-router.post('/signup', (req, res, next) => {
+router.post('/signup/:quizinputId', (req, res, next) => {
+
   const { name, email, password } = req.body;
+  const { quizinputId } = req.params;
 
   if (name === '' || email === '' || password === '') {
     res.status(400).json({ message: "Provide email, password and name" });
@@ -41,22 +45,23 @@ router.post('/signup', (req, res, next) => {
       const hashedPassword = bcrypt.hashSync(password, salt);
 
       
-      return User.create({ name, email, password: hashedPassword });
+      return User.create({ name, email, password: hashedPassword, quizInput: quizinputId });
     })
     .then((createdUser) => {
-      const { email, name, _id } = createdUser;
-    
-      const user = { email, name, _id };
-      res.status(201).json({ user: user });
+      return QuizInput.findByIdAndUpdate(quizinputId, { user: createdUser._id })
+        .then(() => createdUser);
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({ message: "Internal Server Error" })
+    .then((createdUser) => {
+      res.status(201).json({ user: createdUser });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ message: "Internal Server Error" });
     });
 });
 
 // POST  /auth/login - Verifies email and password and returns a JWT
-router.post('/login', (req, res, next) => {
+router.post('/login/:quizinputId', (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if email or password are provided as empty string 

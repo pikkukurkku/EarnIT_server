@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const QuizInput = require("../models/QuizInput.model");
 const Quiz2 = require('../models/Quiz2.model');
 const Quiz3 = require('../models/Quiz3.model');
+const Quiz4 = require('../models/Quiz4.model');
 
 
 router.post("/quizinput", (req, res, next) => {
@@ -43,7 +44,7 @@ router.get("/quizinput/:quizinputId", (req, res, next) => {
   }
 
   QuizInput.findById(quizinputId)
-  .populate("quiz2")
+  .populate('users')
     .then((quizinput) => res.status(200).json(quizinput))
     .catch((error) => res.json(error));
 });
@@ -58,7 +59,6 @@ router.put("/quizinput/:quizinputId/quiz2", async (req, res, next) => {
 
     const { jobTitle, employmentStatus, years, salary, responsibilities } = req.body;
     
-    // Create a new Quiz2 instance
     const quiz2 = new Quiz2({
       jobTitle,
       employmentStatus,
@@ -68,10 +68,8 @@ router.put("/quizinput/:quizinputId/quiz2", async (req, res, next) => {
       quizInput: quizinputId 
     });
 
-    // Save the new Quiz2 instance
     await quiz2.save();
 
-    // Find the QuizInput by id and update the quiz2 field
     const updatedQuizInput = await QuizInput.findByIdAndUpdate(
       quizinputId,
       { $push: { quiz2: quiz2._id } }, // Assuming quiz2 is an array in QuizInput model
@@ -94,21 +92,56 @@ router.put("/quizinput/:quizinputId/quiz3", async (req, res, next) => {
     }
 
     const { previousJobTitle, workPeriod } = req.body;
-    
-    // Create a new Quiz3 instance
+  
     const quiz3 = new Quiz3({
       previousJobTitle,
       workPeriod,
       quizInput: quizinputId 
     });
 
-    // Save the new Quiz2 instance
     await quiz3.save();
 
-    // Find the QuizInput by id and update the quiz2 field
     const updatedQuizInput = await QuizInput.findByIdAndUpdate(
       quizinputId,
-      { $push: { quiz3: quiz3._id } }, // Assuming quiz2 is an array in QuizInput model
+      { $push: { quiz3: quiz3._id } }, 
+      { new: true }
+    );
+
+    res.json(updatedQuizInput);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+router.put("/quizinput/:quizinputId/quiz4", async (req, res, next) => {
+  try {
+    const { quizinputId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(quizinputId)) {
+      return res.status(400).json({ message: "Specified id is not valid" });
+    }
+
+    const { degree, subject, courses, languages, softSkills, hardSkills } = req.body;
+    
+    const quiz4 = new Quiz4({
+      degree,
+      subject,
+      courses,
+      languages,
+      softSkills,
+      hardSkills,
+      quizInput: quizinputId 
+    });
+
+   
+    await quiz4.save();
+
+    const updatedQuizInput = await QuizInput.findByIdAndUpdate(
+      quizinputId,
+      { $push: { quiz4: quiz4._id } },
       { new: true }
     );
 
