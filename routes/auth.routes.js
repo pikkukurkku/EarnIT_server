@@ -12,11 +12,11 @@ const saltRounds = 10;
 
 
 // POST /auth/signup  - Creates a new user in the database
-router.post('/signup', (req, res, next) => {
+router.post('/signup/:quizinputId', (req, res, next) => {
+  const { name, email, password} = req.body;
+  const { quizinputId } = req.params;
 
-  const { name, email, password, quizinputId} = req.body;
-
-  if (name === '' || email === '' || password === '' || !quizinputId) {
+  if (name === '' || email === '' || password === '' ) {
     res.status(400).json({ message: "Provide email, password and name" });
     return;
   }
@@ -42,13 +42,12 @@ router.post('/signup', (req, res, next) => {
 
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashedPassword = bcrypt.hashSync(password, salt);
-      return User.create({ name, email, password: hashedPassword, quizInput: quizinputId });
+      return User.create({ name, email, password: hashedPassword, quizInputId: quizinputId });
     })
     .then((createdUser) => {
       return QuizInput.findByIdAndUpdate(quizinputId, { user: createdUser._id })
         .then(() => createdUser);
-    })
-    .then((createdUser) => {
+    }).then((createdUser) => {
       res.status(201).json({ user: createdUser });
     })
     .catch((err) => {
