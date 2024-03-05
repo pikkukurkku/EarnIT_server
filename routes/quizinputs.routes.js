@@ -124,11 +124,11 @@ router.put("/quizinput/:quizinputId/quiz4", async (req, res, next) => {
       return res.status(400).json({ message: "Specified id is not valid" });
     }
 
-    const { degree, subject, courses, languages, softSkills, hardSkills } = req.body;
+    const { degree, subjects, courses, languages, softSkills, hardSkills } = req.body;
     
     const quiz4 = new Quiz4({
       degree,
-      subject,
+      subjects,
       courses,
       languages,
       softSkills,

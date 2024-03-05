@@ -12,12 +12,11 @@ const saltRounds = 10;
 
 
 // POST /auth/signup  - Creates a new user in the database
-router.post('/signup/:quizinputId', (req, res, next) => {
+router.post('/signup', (req, res, next) => {
 
-  const { name, email, password } = req.body;
-  const { quizinputId } = req.params;
+  const { name, email, password, quizinputId} = req.body;
 
-  if (name === '' || email === '' || password === '') {
+  if (name === '' || email === '' || password === '' || !quizinputId) {
     res.status(400).json({ message: "Provide email, password and name" });
     return;
   }
@@ -43,8 +42,6 @@ router.post('/signup/:quizinputId', (req, res, next) => {
 
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashedPassword = bcrypt.hashSync(password, salt);
-
-      
       return User.create({ name, email, password: hashedPassword, quizInput: quizinputId });
     })
     .then((createdUser) => {
@@ -61,7 +58,7 @@ router.post('/signup/:quizinputId', (req, res, next) => {
 });
 
 // POST  /auth/login - Verifies email and password and returns a JWT
-router.post('/login/:quizinputId', (req, res, next) => {
+router.post('/login', (req, res, next) => {
   const { email, password } = req.body;
   // Check if email or password are provided as empty string 
   if (email === '' || password === '') {
