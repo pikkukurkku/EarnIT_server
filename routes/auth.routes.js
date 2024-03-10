@@ -110,10 +110,28 @@ router.delete('/user', isAuthenticated, (req, res, next) => {
   }
 
   User.findByIdAndDelete(userId)
-    .then(() =>
-      res.json({ message: `User with ${userId} is removed successfully.` })
-    )
-    .catch((error) => res.json(error));
+  .then((deletedUser) => {
+    if (deletedUser) {
+      QuizInput.findOneAndDelete({ user: userId })
+        .then((deletedQuizInput) => {
+          if (deletedQuizInput) {
+            res.json({ message: `User with ${userId} and associated quiz input are removed successfully.` });
+          } else {
+            res.status(404).json({ message: "User removed, but associated quiz input not found." });
+          }
+        })
+        .catch((quizInputError) => {
+          console.error(quizInputError);
+          res.status(500).json({ message: "Error deleting associated quiz input" });
+        });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  })
+  .catch((userError) => {
+    console.error(userError);
+    res.status(500).json({ message: "Error deleting user" });
+  });
 });
 
 module.exports = router;
