@@ -12,7 +12,7 @@ module.exports = (app) => {
 
   app.use(
     cors({
-      origin: ["http://localhost:5173", "https://homepage--visionary-dieffenbachia-36ce76.netlify.app"],
+      origin: ["http://localhost:5173", "https://homepage--visionary-dieffenbachia-36ce76.netlify.app", "https://visionary-dieffenbachia-36ce76.netlify.app"],
     })
   );
 
