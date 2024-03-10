@@ -68,7 +68,10 @@ Web development by:
 
 ## Deployment
 
-Deployed on GitHub Pages -->
+Backend deployed on Render -->
+[click here](https://earnit-server.onrender.com)
+
+Frontend deployed on GitHub Pages -->
 [click here](https://pikkukurkku.github.io/react_project/#/)
 
 ## Local Development
